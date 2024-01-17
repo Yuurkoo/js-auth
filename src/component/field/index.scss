@@ -1,0 +1,42 @@
+@use '../../style' as s;
+
+.field{
+	display: flex;
+	flex-direction:column;
+	gap: s.space(2);
+
+	&__label{
+		font-size:14px;
+		color: gray;
+	}
+
+	&__input{
+		border: 1px solid #f7f7f7;
+		background-color: #f7f7f7;
+
+		padding: s.space(4);
+		border-radius: 10px;
+
+		font-size: 14px;
+
+		&::placeholder{
+			color:#888888;
+		}
+
+		color: #000000;
+
+		transition: border-color 0.3s;
+
+		&:hover{
+			border-color: gray;
+		}
+
+		&:focus{
+			border-color: #f46f17;
+		}
+
+		&--error{
+			border-color: red !important;
+		}
+	}
+}

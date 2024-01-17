@@ -1,0 +1,26 @@
+<div class="field field--select">
+	<span class="field__label">{{label}}</span>
+
+	<div class="field__container">
+		<button onclick="fieldCSelect.toggle(this)" type="button" class="field__select">
+			<span class="field__value field__value--placeholder">{{placeholder}}</span>
+			<div class="field__icon"></div>
+		</button>
+
+		<ul class="field__option-list">
+			{{#each list}}
+			<li onclick="
+			fieldCSelect.change(this);
+
+			{{../action}}('{{../name}}', {{value}})
+
+			
+			" class="field__option">
+				{{text}}
+			</li>
+			{{/each}}
+
+			{{!-- {{../action}}('{{../name}}', {{value}}) дає змогу нам відобразити вибрану роль в консолі --}}
+		</ul>
+	</div>
+</div>
