@@ -2,25 +2,20 @@
 	<span class="field__label">{{label}}</span>
 
 	<div class="field__container">
-		<button onclick="fieldCSelect.toggle(this)" type="button" class="field__select">
+		<button onclick="fieldSelect.toggle(this)" type="button" class="field__select validation" name="{{name}}">
 			<span class="field__value field__value--placeholder">{{placeholder}}</span>
-			<div class="field__icon"></div>
+			<span class="field__icon"></span>
 		</button>
-
 		<ul class="field__option-list">
 			{{#each list}}
 			<li onclick="
-			fieldCSelect.change(this);
+				fieldSelect.change(this);
 
-			{{../action}}('{{../name}}', {{value}})
-
-			
-			" class="field__option">
+				{{../action}}('{{../name}}', {{value}});
+				" class="field__option">
 				{{text}}
 			</li>
 			{{/each}}
-
-			{{!-- {{../action}}('{{../name}}', {{value}}) дає змогу нам відобразити вибрану роль в консолі --}}
 		</ul>
 	</div>
 </div>

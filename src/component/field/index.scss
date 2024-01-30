@@ -1,42 +1,38 @@
 @use '../../style' as s;
 
-.field{
-	display: flex;
-	flex-direction:column;
-	gap: s.space(2);
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: s.space(2);
 
-	&__label{
-		font-size:14px;
-		color: gray;
-	}
+  &__label {
+    font-size: 14px;
+    color: s.color(gray);
+  }
 
-	&__input{
-		border: 1px solid #f7f7f7;
-		background-color: #f7f7f7;
+  &__input {
+    border: 1px solid s.color('box');
+    background-color: s.color('box');
 
-		padding: s.space(4);
-		border-radius: 10px;
+    padding: s.space(4);
+    border-radius: 10px;
 
-		font-size: 14px;
+    font-size: 14px;
 
-		&::placeholder{
-			color:#888888;
-		}
+    &::placeholder {
+      color: s.color('light');
+    }
 
-		color: #000000;
+    color: s.color('dark');
 
-		transition: border-color 0.3s;
+    transition: border-color 0.3s;
 
-		&:hover{
-			border-color: gray;
-		}
+    &:hover {
+      border-color: s.color(gray);
+    }
 
-		&:focus{
-			border-color: #f46f17;
-		}
-
-		&--error{
-			border-color: red !important;
-		}
-	}
+    &:focus {
+      border-color: s.color(main);
+    }
+  }
 }

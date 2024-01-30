@@ -1,6 +1,6 @@
 class FieldPassword {
   static toggle = (target) => {
-    target.toggleAttribute('show') //включаю або вимикаю атрибут show
+    target.toggleAttribute('show')
 
     const input = target.previousElementSibling
 

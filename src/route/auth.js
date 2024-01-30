@@ -3,7 +3,13 @@ const express = require('express')
 // Cтворюємо роутер - місце, куди ми підключаємо ендпоїнти
 const router = express.Router()
 
-const { User } = require('../class/user.js')
+const { User } = require('../class/user')
+
+User.create({
+  email: 'user@example.com',
+  password: 123,
+  role: 1,
+})
 
 // ================================================================
 
@@ -46,6 +52,32 @@ router.get('/signup', function (req, res) {
     },
   })
   // ↑↑ сюди вводимо JSON дані
+})
+
+//===================================================
+
+router.post('/signup', function (req, res) {
+  const { email, password, role } = req.body
+
+  console.log(req.body)
+
+  if (!email || !password || !role) {
+    return res.status(400).json({
+      message: "Помилка. Обовя'язкові поля відсутні",
+    })
+  }
+
+  try {
+    User.create({ email, password, role })
+
+    return res.status(200).json({
+      message: 'Реєстрація пройшла успішно',
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: 'Помилка реєстрації',
+    })
+  }
 })
 
 // Підключаємо роутер до бек-енду
