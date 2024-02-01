@@ -58,24 +58,19 @@ router.get('/signup', function (req, res) {
 
 router.post('/signup', function (req, res) {
   const { email, password, role } = req.body
-
   console.log(req.body)
-
   if (!email || !password || !role) {
     return res.status(400).json({
       message: "Помилка. Обовя'язкові поля відсутні",
     })
   }
-
   try {
-    User.create({ email, password, role })
-
     return res.status(200).json({
       message: 'Реєстрація пройшла успішно',
     })
   } catch (err) {
-    return res.status(400).json({
-      message: 'Помилка реєстрації',
+    return res.status(200).json({
+      message: 'Помилка створення користувача',
     })
   }
 })

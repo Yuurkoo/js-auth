@@ -94,8 +94,8 @@ export class Form {
 
     if (status === 'progress') {
       el.className = 'alert alert--progress'
-    } else if (status === 'sucsses') {
-      el.className = 'alert alert--sucsses'
+    } else if (status === 'success') {
+      el.className = 'alert alert--success'
     } else if (status === 'error') {
       el.className = 'alert alert--error'
     } else {
