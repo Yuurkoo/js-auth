@@ -5,6 +5,8 @@ const router = express.Router()
 
 const { User } = require('../class/user')
 
+const { Confirm } = require('../class/confirm')
+
 User.create({
   email: 'user@example.com',
   password: 123,
@@ -58,19 +60,158 @@ router.get('/signup', function (req, res) {
 
 router.post('/signup', function (req, res) {
   const { email, password, role } = req.body
+
   console.log(req.body)
+
   if (!email || !password || !role) {
     return res.status(400).json({
       message: "Помилка. Обовя'язкові поля відсутні",
     })
   }
   try {
+    const user = User.getByEmail(email)
+
+    User.create({ email, password, role })
+
+    if (user) {
+      return res.status(400).json({
+        message: 'Такий користувач вже існує',
+      })
+    }
+
     return res.status(200).json({
       message: 'Реєстрація пройшла успішно',
     })
   } catch (err) {
     return res.status(200).json({
       message: 'Помилка створення користувача',
+    })
+  }
+})
+
+// ================================================================
+
+// router.get Створює нам один ентпоїнт
+
+// ↙️ тут вводимо шлях (PATH) до сторінки
+router.get('/recovery', function (req, res) {
+  // res.render генерує нам HTML сторінку
+
+  // ↙️ cюди вводимо назву файлу з сontainer
+  res.render('recovery', {
+    // вказуємо назву контейнера
+    name: 'recovery',
+    // вказуємо назву компонентів
+    component: ['back-button', 'field'],
+
+    // вказуємо назву сторінки
+    title: 'Recovery page',
+    // ... сюди можна далі продовжувати додавати потрібні технічні дані, які будуть використовуватися в layout
+
+    // вказуємо дані,
+    data: {},
+  })
+  // ↑↑ сюди вводимо JSON дані
+})
+
+//===================================================
+
+router.post('/recovery', function (req, res) {
+  const { email } = req.body
+
+  console.log(email)
+
+  if (!email) {
+    return res.status(400).json({
+      message: "Помилка. Обовя'язкові поля відсутні",
+    })
+  }
+
+  try {
+    const user = User.getByEmail(email)
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'Користувача з таким e-mail не існує',
+      })
+    }
+
+    Confirm.create(email)
+
+    return res.status(200).json({
+      message: 'Код для відновлення було надіслано',
+    })
+  } catch (e) {
+    return res.status(400).json({
+      message: e.message,
+    })
+  }
+})
+
+// ================================================================
+
+// router.get Створює нам один ентпоїнт
+
+// ↙️ тут вводимо шлях (PATH) до сторінки
+router.get('/recovery-confirm', function (req, res) {
+  // res.render генерує нам HTML сторінку
+
+  // ↙️ cюди вводимо назву файлу з сontainer
+  return res.render('recovery-confirm', {
+    // вказуємо назву контейнера
+    name: 'recovery-confirm',
+    // вказуємо назву компонентів
+    component: ['back-button', 'field', 'field-password'],
+
+    // вказуємо назву сторінки
+    title: 'Recovery confirm page',
+    // ... сюди можна далі продовжувати додавати потрібні технічні дані, які будуть використовуватися в layout
+
+    // вказуємо дані,
+    data: {},
+  })
+  // ↑↑ сюди вводимо JSON дані
+})
+
+//===================================================
+
+router.post('/recovery-confirm', function (req, res) {
+  const { password, code } = req.body
+
+  console.log(password, code)
+
+  if (!code || !password) {
+    return res.status(400).json({
+      message: 'Помилка. Перевірте введені дані',
+    })
+  }
+
+  try {
+    const email = Confirm.getData(Number(code)) //отримуємо код
+
+    if (!email) {
+      return res.status(400).json({
+        message: 'Неправильний код',
+      })
+    }
+
+    const user = User.getByEmail(email) //перевіряємо пошту
+
+    if (!user) {
+      return res.status(400).json({
+        message: 'Користувача з таким e-mail не існує',
+      })
+    }
+
+    user.password = password //змінюємо пароль
+    console.log(user)
+
+    return res.status(200).json({
+      message: 'Пароль змінено',
+    })
+  } catch (e) {
+    return res.status(400).json({
+      message: e.message,
     })
   }
 })
