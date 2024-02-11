@@ -7,6 +7,8 @@ const { User } = require('../class/user')
 
 const { Confirm } = require('../class/confirm')
 
+const { Session } = require('../class/session')
+
 User.create({
   email: 'user@example.com',
   password: 123,
@@ -71,16 +73,21 @@ router.post('/signup', function (req, res) {
   try {
     const user = User.getByEmail(email)
 
-    User.create({ email, password, role })
-
     if (user) {
       return res.status(400).json({
         message: 'Такий користувач вже існує',
       })
     }
 
+    const newUser = User.create({ email, password, role })
+
+    const session = Session.create(newUser)
+
+    Confirm.create(newUser.email)
+
     return res.status(200).json({
       message: 'Реєстрація пройшла успішно',
+      session,
     })
   } catch (err) {
     return res.status(200).json({
@@ -206,12 +213,88 @@ router.post('/recovery-confirm', function (req, res) {
     user.password = password //змінюємо пароль
     console.log(user)
 
+    const session = Session.create(user)
+
     return res.status(200).json({
       message: 'Пароль змінено',
+      session,
     })
   } catch (e) {
     return res.status(400).json({
       message: e.message,
+    })
+  }
+})
+
+// ================================================================
+
+router.get('/signup-confirm', function (req, res) {
+  const { renew, email } = req.query
+
+  // res.render генерує нам HTML сторінку
+
+  // ↙️ cюди вводимо назву файлу з сontainer
+  return res.render('signup-confirm', {
+    // вказуємо назву контейнера
+    name: 'signup-confirm',
+    // вказуємо назву компонентів
+    component: ['back-button', 'field'],
+
+    // вказуємо назву сторінки
+    title: 'Signup confirm page',
+    // ... сюди можна далі продовжувати додавати потрібні технічні дані, які будуть використовуватися в layout
+
+    // вказуємо дані,
+    data: {},
+  })
+  // ↑↑ сюди вводимо JSON дані
+})
+
+//===================================================
+
+router.post('/signup-confirm', function (req, res) {
+  const { code, token } = req.body
+
+  if (!code || !token) {
+    return res.status(400).json({
+      message: "Помилка. Обов'язкові поля відсутні",
+    })
+  }
+
+  try {
+    const session = Session.get(token)
+
+    if (!session) {
+      return res.status(400).json({
+        message: 'Помилка. Ви не увійшли в аккаунт',
+      })
+    }
+
+    const email = Confirm.getData(code)
+
+    if (!email) {
+      return res.status(400).json({
+        message: 'Код не існує',
+      })
+    }
+
+    if (email !== session.user.email) {
+      return res.status(400).json({
+        message: 'Код не дійсний',
+      })
+    }
+
+    const user = User.getByEmail(session.user.email)
+    user.isConfirm = true
+    session.user.isConfirm = true
+
+    return res.status(200).json({
+      message: 'Ви підтвердили свою пошту',
+      session,
+    })
+  } catch (err) {
+    return res.status(400).json({
+      message: err.message,
     })
   }
 })

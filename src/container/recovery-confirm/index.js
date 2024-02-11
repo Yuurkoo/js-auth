@@ -4,7 +4,8 @@ import {
   REG_EXP_PASSWORD,
 } from '../../script/form'
 
-// клас SignupForm наслідує Form. Тобто Form є батьківським класом
+import { saveSession } from '../../script/session'
+
 class RecoveryConfirmForm extends Form {
   FIELD_NAME = {
     CODE: 'code',
@@ -15,7 +16,6 @@ class RecoveryConfirmForm extends Form {
   FIELD_ERROR = {
     IS_EMPTY: 'Введіть значення в поле',
     IS_BIG: 'Дуже довге значення, приберіть зайве',
-    EMAIL: 'Введіть коректне значення e-mail адреси',
     PASSWORD:
       'Пароль повинен складатися з не менше ніж 8 символів, включаючи хоча б одну цифру, малу та велику літеру',
     PASSWORD_AGAIN:
@@ -47,22 +47,19 @@ class RecoveryConfirmForm extends Form {
     }
   }
 
-  // цей метод відправляє запит на сервер
   submit = async () => {
-    // якщо користувач не введе жодного поля
-    // і захоче відправити форму, йому вискочить помилка
-    // біля кожного поля яке не заповнене + кнопка буде не активна
-    // після коректного введення кнопка стає активною
-    // якщо раптом галочку забирають, кнопка стає неактивною
-    // ми створили гнучку валідацію
-
+    //     // якщо користувач не введе жодного поля
+    //     // і захоче відправити форму, йому вискочить помилка
+    //     // біля кожного поля яке не заповнене + кнопка буде не активна
+    //     // після коректного введення кнопка стає активною
+    //     // якщо раптом галочку забирають, кнопка стає неактивною
+    //     // ми створили гнучку валідацію
     if (this.disabled === true) {
       this.validateAll()
     } else {
       console.log(this.value)
 
       this.setAlert('progress', 'Завантаження...')
-      // під кнопкою з'являється синій alert
 
       try {
         const res = await fetch('/recovery-confirm', {
@@ -77,6 +74,8 @@ class RecoveryConfirmForm extends Form {
 
         if (res.ok) {
           this.setAlert('success', data.message)
+          saveSession(data.session)
+          location.assign('/')
         } else {
           this.setAlert('error', data.message)
         }
@@ -86,7 +85,6 @@ class RecoveryConfirmForm extends Form {
     }
   }
 
-  //дані які відправляються на бекенд
   convertData = () => {
     return JSON.stringify({
       [this.FIELD_NAME.CODE]: Number(
