@@ -1,10 +1,11 @@
 import { Form } from '../../script/form'
+
 import {
   saveSession,
   getTokenSession,
+  getSession,
 } from '../../script/session'
 
-// клас SignupForm наслідує Form. Тобто Form є батьківським класом
 class SignupConfirmForm extends Form {
   FIELD_NAME = {
     CODE: 'code',
@@ -13,7 +14,6 @@ class SignupConfirmForm extends Form {
   FIELD_ERROR = {
     IS_EMPTY: 'Введіть значення в поле',
     IS_BIG: 'Дуже довге значення, приберіть зайве',
-    EMAIL: 'Введіть коректне значення e-mail адреси',
   }
 
   validate = (name, value) => {
@@ -26,22 +26,13 @@ class SignupConfirmForm extends Form {
     }
   }
 
-  // цей метод відправляє запит на сервер
   submit = async () => {
-    // якщо користувач не введе жодного поля
-    // і захоче відправити форму, йому вискочить помилка
-    // біля кожного поля яке не заповнене + кнопка буде не активна
-    // після коректного введення кнопка стає активною
-    // якщо раптом галочку забирають, кнопка стає неактивною
-    // ми створили гнучку валідацію
-
     if (this.disabled === true) {
       this.validateAll()
     } else {
       console.log(this.value)
 
       this.setAlert('progress', 'Завантаження...')
-      // під кнопкою з'являється синій alert
 
       try {
         const res = await fetch('/signup-confirm', {
@@ -67,7 +58,6 @@ class SignupConfirmForm extends Form {
     }
   }
 
-  //дані які відправляються на бекенд
   convertData = () => {
     return JSON.stringify({
       [this.FIELD_NAME.CODE]: Number(
@@ -79,3 +69,27 @@ class SignupConfirmForm extends Form {
 }
 
 window.signupConfirmForm = new SignupConfirmForm()
+
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (window.session) {
+      if (window.session.user.isConfirm) {
+        location.assign('/')
+      }
+    } else {
+      location.assign('/')
+    }
+  } catch (e) {}
+
+  document
+    .querySelector('#renew')
+    .addEventListener('click', (e) => {
+      e.preventDefault()
+
+      const session = getSession()
+
+      location.assign(
+        `/signup-confirm?renew=true&email=${session.user.email}`,
+      )
+    })
+})

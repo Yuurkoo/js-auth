@@ -8,9 +8,10 @@ export const saveSession = (session) => {
       SESSION_KEY,
       JSON.stringify(session),
     )
-  } catch (err) {}
-  console.log(err)
-  window.session = null
+  } catch (er) {
+    console.log(er)
+    window.session = null
+  }
 }
 
 export const loadSession = () => {
@@ -24,25 +25,32 @@ export const loadSession = () => {
     } else {
       window.session = null
     }
-  } catch (err) {
-    console.log(err)
+  } catch (er) {
+    console.log(er)
     window.session = null
   }
 }
 
 export const getTokenSession = () => {
   try {
+    const session = getSession()
+
+    return session ? session.token : null
+  } catch (er) {
+    console.log(er)
+    return null
+  }
+}
+
+export const getSession = () => {
+  try {
     const session =
       JSON.parse(localStorage.getItem(SESSION_KEY)) ||
       window.session
 
-    if (session) {
-      return session.token
-    } else {
-      return null
-    }
-  } catch (err) {
-    console.log(err)
+    return session || null
+  } catch (er) {
+    console.log(er)
     return null
   }
 }
