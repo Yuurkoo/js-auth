@@ -231,6 +231,10 @@ router.post('/recovery-confirm', function (req, res) {
 router.get('/signup-confirm', function (req, res) {
   const { renew, email } = req.query
 
+  if (renew) {
+    Confirm.create(email)
+  }
+
   // res.render генерує нам HTML сторінку
 
   // ↙️ cюди вводимо назву файлу з сontainer
